@@ -10,11 +10,12 @@ def main():
     # server_socket = socket.create_server(("localhost", 6379), reuse_port=True)
     server_socket = socket.create_server(("localhost", 6379))
 
-    connection , _ = server_socket.accept() # wait for client
-    connection.sendall(b"+PONG\r\n")
+    while True:
+        connection , _ = server_socket.accept() # wait for client
+        connection.sendall(b"+PONG\r\n")
     # print(connection)
 
-    server_socket.settimeout(1.0) 
+    # server_socket.settimeout(1.0)
 
 if __name__ == "__main__":
     main()
