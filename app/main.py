@@ -14,7 +14,7 @@ def main():
     connection.sendall(b"+PONG\r\n")
     # print(connection)
 
-    # server_socket.settimeout(1.0) 
+    server_socket.settimeout(1.0) 
 
 if __name__ == "__main__":
     main()
