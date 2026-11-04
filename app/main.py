@@ -5,6 +5,8 @@ clients = []
 
 storage = {}
 
+# storage[key] = ['value' , 100]
+
 def main():
     print("Logs from your program will appear here!")
 
@@ -53,10 +55,10 @@ def main():
                 conn.sendall(b"+OK\r\n")
 
             elif command == b"GET":
-                paramName = parts[4]
-                if paramName in storage :
-                    paramValue = storage[paramName]
-                    reply = b"$" + str(len(paramValue)).encode() + b"\r\n" + paramValue + b"\r\n"
+                key = parts[4]
+                if key in storage :
+                    value = storage[key]
+                    reply = b"$" + str(len(value)).encode() + b"\r\n" + value + b"\r\n"
                     conn.sendall(reply)
 
 
@@ -70,4 +72,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# adding comment -> Implement the ECHO command
+# adding comment -> Implement the SET & GET commands
