@@ -4,15 +4,19 @@ import time  # noqa: F401
 
 clients = []
 
+# storage[key] = ['value' , 1000] # millisecond
+# storage[key] = ['value' , 100]  # millisecond
 storage = {}
+
+# fruits "apple"
+# storage_list{fruits} = [item1 , item2 , item3]
+storage_list = {}
 
 NULL_BULK = b"$-1\r\n"
 
 MULTIPLIER = {b"EX": 1000, b"PX": 1}
 
-# storage[key] = ['value' , 1000] # mili second
-# storage[key] = ['value' , 100]  # mili second
-#
+
 
 def main():
     print("Logs from your program will appear here!")
@@ -104,6 +108,16 @@ def handle_command(parts):
                     return NULL_BULK
             else:
                 return NULL_BULK
+
+        case b"RPUSH":
+            key = parts[4]
+            value = parts[6]
+
+            storage_list[key] = [value]
+
+            return b":1\r\n"
+
+
         case _:
             return b"+PONG\r\n"
 
