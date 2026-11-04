@@ -3,6 +3,8 @@ import socket  # noqa: F401
 
 clients = []
 
+storage = {}
+
 def main():
     print("Logs from your program will appear here!")
 
@@ -43,6 +45,19 @@ def main():
                 args = parts[4]
                 reply = b"$" + str(len(args)).encode() + b"\r\n" + args + b"\r\n"
                 conn.sendall(reply)
+
+            elif command == b"SET":
+                key = parts[4]
+                value = parts[6]
+                storage[key] = value
+                conn.sendall(b"+OK\r\n")
+
+            elif command == b"GET":
+                paramName = parts[4]
+                if paramName in storage :
+                    paramValue = storage[paramName]
+                    reply = b"$" + str(len(paramValue)).encode() + b"\r\n" + paramValue + b"\r\n"
+
 
             else:
                 conn.sendall(b"+PONG\r\n")
