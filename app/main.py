@@ -41,9 +41,9 @@ def main():
             args = parts[4]
 
             if command == "ECHO":
-                reply = b"$" + str(len(args)).encode() + b"\r\n" + arg + b"\r\n"
+                reply = b"$" + str(len(args)).encode() + b"\r\n" + args + b"\r\n"
                 conn.sendall(reply)
-                
+
             else:
                 conn.sendall(b"+PONG\r\n")
 
