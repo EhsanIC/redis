@@ -113,9 +113,13 @@ def handle_command(parts):
             key = parts[4]
             value = parts[6]
 
-            storage_list[key] = [value]
 
-            if exis
+
+            if key in storage:
+                storage_list[key].append(value)
+            else:
+                storage_list[key] = [value]
+
 
             return b":" + str(len(storage_list[key])).encode() + b"\r\n"
 
