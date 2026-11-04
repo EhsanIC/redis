@@ -34,7 +34,18 @@ def main():
                 conn.close()
                 continue
 
-            conn.sendall(b"+PONG\r\n")
+            # *2\r\n$4\r\nECHO\r\n$3\r\nhey\r\n
+            parts = data.split("\r\n")
+
+            command = parts[2].upper()
+            args = parts[4]
+
+            if command == "ECHO":
+                reply = b"$" + str(len(args)).encode() + b"\r\n" + arg + b"\r\n"
+                conn.sendall(reply)
+                
+            else:
+                conn.sendall(b"+PONG\r\n")
 
 
 
