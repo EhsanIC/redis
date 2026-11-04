@@ -3,7 +3,7 @@ def main():
     test = {}
 
     test["name"] = ["ali"]
-    test["name"] = ["ali" , "test2"]
+    test["name"] = ["test2"]
     print(test["name"])
 
 if __name__ == "__main__":

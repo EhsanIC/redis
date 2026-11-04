@@ -115,9 +115,9 @@ def handle_command(parts):
 
             storage_list[key] = [value]
 
-            item_length = len(storage_list[key])
+            if exis
 
-            return b"#" + str(item_length).encode() + b"\r\n"
+            return b":" + str(len(storage_list[key])).encode() + b"\r\n"
 
 
         case _:
