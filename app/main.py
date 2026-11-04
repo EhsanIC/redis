@@ -115,7 +115,7 @@ def handle_command(parts):
 
 
 
-            if key in storage:
+            if key in storage_list:
                 storage_list[key].append(value)
             else:
                 storage_list[key] = [value]
