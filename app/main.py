@@ -85,7 +85,8 @@ def main():
                             reply = b"$" + str(len(value)).encode() + b"\r\n" + value + b"\r\n"
                             conn.sendall(reply)
 
-
+                        else:
+                            conn.sendall(b"$-1\r\n")
 
                 case _:
                     conn.sendall(b"+PONG\r\n")
