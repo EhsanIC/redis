@@ -1,23 +1,30 @@
 import socket  # noqa: F401
 
 
+clients = []
+
 def main():
-    # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!")
 
-    # Uncomment the code below to pass the first stage
-    #
-    # server_socket = socket.create_server(("localhost", 6379), reuse_port=True)
-    server_socket = socket.create_server(("localhost", 6379))
-    connection , _ = server_socket.accept()
-    while True:
-        data = connection.recv(1024)
-        if not data:
-           break
-         # wait for client
-        connection.sendall(b"+PONG\r\n")
 
-    # print(connection)
+    server_socket = socket.create_server(("localhost", 6379))
+
+    while True:
+        
+        conn , _ = server_socket.accept()
+        clients.append(conn)
+        
+        for conn in clients[:] :
+            data = conn.recv(1024)
+
+            if not data:
+                clients.remove(conn)
+                conn.close()
+                continue
+                
+            conn.sendall(b"+PONG\r\n")
+
+
 
     # server_socket.settimeout(1.0)
 
