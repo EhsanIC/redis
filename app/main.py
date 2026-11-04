@@ -1,11 +1,14 @@
-import socket  # noqa: F401
+import socket
+import time  # noqa: F401
 
 
 clients = []
 
 storage = {}
 
-# storage[key] = ['value' , 100]
+# storage[key] = ['value' , 1000] # mili second
+# storage[key] = ['value' , 100]  # mili second
+#
 
 def main():
     print("Logs from your program will appear here!")
@@ -51,7 +54,24 @@ def main():
             elif command == b"SET":
                 key = parts[4]
                 value = parts[6]
-                storage[key] = value
+
+                if len(parts) > 8 and parts[8].upper() in (b"EX", b"PX"):
+
+                    time_value = int(parts[10])
+                    current_time = time.monotonic() * 1000 # turn ot millisecond
+
+                    match parts[8]:
+                        case b"EX":
+                            storage[key] = [value , current_time + time_value * 1000] # turn to millisecond
+                            print("SET", key, storage[key], flush=True)
+                        case b"PX":
+                            storage[key] = [value , current_time + time_value]
+                            print("SET", key, storage[key], flush=True)
+
+                else:
+                    storage[key] = [value , None]
+                    print("SET", key, storage[key], flush=True)
+
                 conn.sendall(b"+OK\r\n")
 
             elif command == b"GET":
@@ -70,6 +90,8 @@ def main():
     # server_socket.settimeout(1.0)
 
 if __name__ == "__main__":
+    # print(time.monotonic())
+    # print(time.time())
     main()
 
 # adding comment -> Implement the SET & GET commands
