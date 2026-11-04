@@ -46,7 +46,7 @@ def main():
                 continue
 
             # *2\r\n$4\r\nECHO\r\n$3\r\nhey\r\n
-            result = handel_command(data.split(b"\r\n"))
+            result = handle_command(data.split(b"\r\n"))
             conn.sendall(result)
     # server_socket.settimeout(1.0)
 
@@ -63,9 +63,8 @@ def bulk_string(value):
     return b"$" + str(len(value)).encode() + b"\r\n" + value + b"\r\n"
 
 
-
 # handing commands
-def handel_command(parts):
+def handle_command(parts):
 
     command = parts[2].upper()
 
@@ -79,7 +78,7 @@ def handel_command(parts):
             key = parts[4]
             value = parts[6]
 
-            if len(parts) > 8 and parts[8].upper() in (b"EX", b"PX"):
+            if len(parts) > 8 and parts[8].upper() in MULTIPLIER:
 
                 time_value = int(parts[10])
 
@@ -103,7 +102,8 @@ def handel_command(parts):
 
                 else:
                     return NULL_BULK
-
+            else:
+                return NULL_BULK
         case _:
             return b"+PONG\r\n"
 
