@@ -57,6 +57,7 @@ def main():
                 if paramName in storage :
                     paramValue = storage[paramName]
                     reply = b"$" + str(len(paramValue)).encode() + b"\r\n" + paramValue + b"\r\n"
+                    conn.sendall(reply)
 
 
             else:
