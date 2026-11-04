@@ -35,12 +35,12 @@ def main():
                 continue
 
             # *2\r\n$4\r\nECHO\r\n$3\r\nhey\r\n
-            parts = data.split("\r\n")
+            parts = data.split(b"\r\n")
 
             command = parts[2].upper()
-            args = parts[4]
 
-            if command == "ECHO":
+            if command == b"ECHO":
+                args = parts[4]
                 reply = b"$" + str(len(args)).encode() + b"\r\n" + args + b"\r\n"
                 conn.sendall(reply)
 
