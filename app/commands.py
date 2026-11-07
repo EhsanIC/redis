@@ -1,4 +1,4 @@
-from helpers import is_alive , now_ms , bulk_string , NULL_BULK , MULTIPLIER
+from app.helpers import is_alive, now_ms, bulk_string, NULL_BULK, MULTIPLIER
 
 class Commands:
 
