@@ -119,7 +119,7 @@ def handle_command(parts):
             if key in storage_list:
                 storage_list[key].extend(value_list)
             else:
-                storage_list[key] = [value_list]
+                storage_list[key] = value_list
 
 
             return b":" + str(len(storage_list[key])).encode() + b"\r\n"
