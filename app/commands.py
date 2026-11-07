@@ -23,6 +23,9 @@ class Commands:
             case b"RPUSH":
                 return self.rpush(parts)
 
+            case b"LRANGE":
+                return self.lrange(parts)
+
             case _:
                 return b"+PONG\r\n"
 
@@ -74,3 +77,14 @@ class Commands:
 
 
         return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
+
+
+    def lrange(self , parts):
+        key = parts[4]
+        # [b'a', b'b']
+        rangs = parts[6:len(parts):2]
+        min = rangs[0]
+        max = rangs[1]
+
+        value_list = self.storage_list[key]
+        return value_list[min:max]
