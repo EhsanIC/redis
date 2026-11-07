@@ -111,16 +111,15 @@ def handle_command(parts):
 
         case b"RPUSH":
             key = parts[4]
-            value = parts[6]
+            # value = parts[6]
 
+            # [b'pineapple', b'banana']
             value_list = parts[6:len(parts):2]
-            print(value_list)
-
-
+            
             if key in storage_list:
-                storage_list[key].append(value)
+                storage_list[key].append(value_list)
             else:
-                storage_list[key] = [value]
+                storage_list[key] = [value_list]
 
 
             return b":" + str(len(storage_list[key])).encode() + b"\r\n"
