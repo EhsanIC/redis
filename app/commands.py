@@ -1,4 +1,4 @@
-from app.helpers import is_alive, now_ms, bulk_string, NULL_BULK, MULTIPLIER
+from app.helpers import is_alive, now_ms, bulk_string, NULL_BULK, MULTIPLIER , EMPTY_LIST
 
 class Commands:
 
@@ -84,17 +84,19 @@ class Commands:
         # [b'a', b'b']
         rangs = parts[6:len(parts):2]
         start = int(rangs[0])
-        stop = int(rangs[1])
+        stop = int(rangs[1]) + 1
 
-        value_list = self.storage_list[key]
+
 
         # If the list doesn't exist, an empty array is returned.
         if key not in self.storage_list:
-            return []
+            return EMPTY_LIST
+
+        value_list = self.storage_list[key]
 
         # If the start index is greater than or equal to the list's length, an empty array is returned.
         if start >= len(self.storage_list[key]):
-            return []
+            return EMPTY_LIST
 
         if stop == None:
             return value_list[start:]
@@ -105,8 +107,8 @@ class Commands:
             return value_list[start:]
 
         # If the start index is greater than the stop index, an empty array is returned.
-        if start >= stop :
-            return []
+        if start > stop :
+            return EMPTY_LIST
 
 
 
