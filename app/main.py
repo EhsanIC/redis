@@ -1,5 +1,5 @@
-from app.commands import Commands
-from app.server import Server
+from commands import Commands
+from server import Server
 
 clients = []
 
