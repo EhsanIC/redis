@@ -113,6 +113,8 @@ def handle_command(parts):
             key = parts[4]
             value = parts[6]
 
+            value_list = parts[6:len(parts):2]
+            print("here is the log test" + value_list)
 
 
             if key in storage_list:
