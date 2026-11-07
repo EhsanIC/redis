@@ -87,4 +87,23 @@ class Commands:
         max = rangs[1]
 
         value_list = self.storage_list[key]
+
+        # If the list doesn't exist, an empty array is returned.
+        if key not in self.storage_list and min >= len(self.storage_list[key]) and min >= max:
+            return []
+
+        # If the start index is greater than or equal to the list's length, an empty array is returned.
+        # if min >= len(self.storage_list[key]):
+        #     return []
+
+
+        # If the stop index is greater than or equal to the list's length, the stop index is treated as the last element.
+        if max >= len(self.storage_list[key]):
+            return value_list[min:len(self.storage_list[key])]
+
+        # If the start index is greater than the stop index, an empty array is returned.
+        # if min >= max :
+        #     return []
+
+
         return value_list[min:max]
