@@ -115,9 +115,9 @@ def handle_command(parts):
 
             # [b'pineapple', b'banana']
             value_list = parts[6:len(parts):2]
-            
+
             if key in storage_list:
-                storage_list[key].append(value_list)
+                storage_list[key].extend(value_list)
             else:
                 storage_list[key] = [value_list]
 
