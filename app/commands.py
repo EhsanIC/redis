@@ -185,8 +185,14 @@ class Commands:
         if self.storage_list.get(key):
             return bulk_list([key , self.storage_list[key].pop(0)])
 
-        self.waiters.setdefault(key, deque()).append(conn)
+        deadline = (now_ms() * 1000) + time_out if time_out != 0 else None
+
+        self.waiters.setdefault(key, deque()).append(conn, deadline)
         return None
+
+        # set the deadline
+        # chekcing the deadlines
+        # remove the daedline if needed
 
         # with self.cond:
         #     while not self.storage_list.get(key):
@@ -209,13 +215,24 @@ class Commands:
     def _server_waiter(self , key):
         queue = self.waiters.get(key)
         while queue and self.storage_list.get(key):
-            conn = queue.popleft()
+            conn, _ = queue.popleft()
             item = self.storage_list[key].pop(0)
             conn.sendall(bulk_list([key, item]))
 
     def disconnect(self , conn):
-        for queue in self.waiters.values():
-            if conn in queue:
-                queue.remove(conn)
+        for key, queue in self.waiters.items():
+            self.waiters[key] = deque(w for w in queue if w[0] != conn)
+
+    def expire_waiters(self):
+        for key, queue in self.waiters.items():
+            alive = deque()
+
+            for conn, deadline in queue:
+                if is_alive(deadline):
+                    alive.append((conn, deadline))
+                else:
+                    conn.sendall(NULL_BULK)
+
+            self.waiters[key] = alive
 
 #-> Parking blocked clients

@@ -17,6 +17,9 @@ def Server(command_handler):
         except BlockingIOError:
             pass # nobody is trying to connect right now
 
+
+        command_handler.expire_waiters() # check deadlines every pass
+
         for conn in clients[:] :
 
             try:
