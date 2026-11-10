@@ -89,8 +89,8 @@ class Commands:
         else:
             self.storage_list[key] = value_list
 
-        with self.cond:
-            self.cond.notify()
+        # with self.cond:
+        #     self.cond.notify()
 
         return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
 
