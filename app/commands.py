@@ -153,6 +153,10 @@ class Commands:
     def lpop(self, parts):
         key = parts[4]
         remove_num = int(parts[6])
+        removed = []
 
         for _ in range(remove_num):
-            return bulk_string(self.storage_list[key].pop(0))
+            removed.append(self.storage_list[key].pop(0))
+
+        print(removed)
+        return bulk_list(removed)
