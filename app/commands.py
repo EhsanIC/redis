@@ -87,8 +87,7 @@ class Commands:
         stop = int(rangs[1])
         if not stop < 0 :
             stop += 1
-        elif stop < 0:
-            stop -= 1
+
 
 
 
