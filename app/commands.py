@@ -89,8 +89,8 @@ class Commands:
 
 
         # If the list doesn't exist, an empty array is returned.
-        # if key not in self.storage_list:
-        #     return EMPTY_LIST
+        if key not in self.storage_list:
+            return EMPTY_LIST
 
         value_list = self.storage_list[key]
 
