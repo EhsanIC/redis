@@ -142,6 +142,7 @@ class Commands:
 
     def llen(self, parts):
         key = parts[4]
-        result = ZERO_BULK
-        if key in self.storage_list : result = str(len(self.storage_list[key])).encode()
-        return b":" + result + b"\r\n"
+        if key in self.storage_list :
+            return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
+        else:
+            return ZERO_BULK
