@@ -1,4 +1,4 @@
-from app.helpers import ZERO_BULK, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST
+from app.helpers import ZERO_INT, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST
 
 class Commands:
 
@@ -145,4 +145,4 @@ class Commands:
         if key in self.storage_list :
             return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
         else:
-            return ZERO_BULK
+            return ZERO_INT

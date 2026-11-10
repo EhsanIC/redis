@@ -2,7 +2,7 @@ import time  # noqa: F401
 
 NULL_BULK = b"$-1\r\n"
 
-ZERO_BULK = b"$0\r\n"
+ZERO_INT = b":0\r\n"
 
 EMPTY_LIST = b"*0\r\n"
 
