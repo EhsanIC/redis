@@ -129,10 +129,11 @@ class Commands:
 
         if key in self.storage_list:
             # put the reversed new items in front of the existing ones
-            ...
+            revered_list = value_list[::-1] + []
+            self.storage_list[key].extend(revered_list)
+
         else:
             # new list: just the reversed new items
-            print(value_list[::-1] + [])
             self.storage_list[key] = value_list[::-1] + []
 
 
