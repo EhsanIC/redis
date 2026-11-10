@@ -85,9 +85,10 @@ class Commands:
         rangs = parts[6:len(parts):2]
         start = int(rangs[0])
         stop = int(rangs[1])
-        if stop < 0:
+        if not stop < 0 :
             stop += 1
-
+        elif stop < 0:
+            stop -= 1
 
 
 
