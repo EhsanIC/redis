@@ -28,12 +28,14 @@ def Server(command_handler):
 
 
             if not data:
+                command_handler.disconnect(conn)
                 clients.remove(conn)
                 conn.close()
                 continue
 
             # *2\r\n$4\r\nECHO\r\n$3\r\nhey\r\n
-            result = command_handler.handle(data.split(b"\r\n"))
-            conn.sendall(result)
+            result = command_handler.handle(data.split(b"\r\n") , conn)
+            if result is not None:
+                conn.sendall(result)
 
             # server_socket.settimeout(1.0)

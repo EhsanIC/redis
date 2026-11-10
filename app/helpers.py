@@ -37,3 +37,4 @@ def bulk_list(list):
 
     return result
     # return b"$" + str(len(list)).encode() + b"\r\n" + list + b"\r\n"
+

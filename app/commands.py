@@ -1,14 +1,16 @@
+from collections import deque
+
 from app.helpers import ZERO_INT, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST
-import threading
+
 
 class Commands:
 
     def __init__(self) -> None:
         self.storage = {}
         self.storage_list = {}
-        self.cond = threading.Condition()
+        self.waiters = {}
 
-    def handle(self , parts):
+    def handle(self , parts , conn):
 
         command = parts[2].upper()
 
@@ -38,7 +40,7 @@ class Commands:
                 return self.lpop(parts)
 
             case b"BLPOP":
-                return self.blpop(parts)
+                return self.blpop(parts , conn)
 
             case _:
                 return b"+PONG\r\n"
@@ -83,18 +85,23 @@ class Commands:
         key = parts[4]
         # [b'pineapple', b'banana']
         value_list = parts[6:len(parts):2]
-        with self.cond:
 
-            if key in self.storage_list:
-                self.storage_list[key].extend(value_list)
-            else:
-                self.storage_list[key] = value_list
-
-            length = len(self.storage_list[key])                        # 2. read length
-            self.cond.notify()                                          # 3. wake one waiter
-
+        self.storage_list.setdefault(key , []).extend(value_list)
+        length = len(self.storage_list[key])
+        self._server_waiter(key)
 
         return b":" + str(length).encode() + b"\r\n"
+
+        # if key in self.storage_list:
+        #     self.storage_list[key].extend(value_list)
+        # else:
+        #     self.storage_list[key] = value_list
+
+        # length = len(self.storage_list[key])                        # 2. read length
+                                        # 3. wake one waiter
+
+
+
 
 
     def lrange(self , parts):
@@ -142,17 +149,9 @@ class Commands:
         key = parts[4]
         value_list = parts[6:len(parts):2]
 
-        with self.cond:
-
-            if key in self.storage_list:
-                revered_list = value_list[::-1] + []
-                self.storage_list[key] = revered_list + self.storage_list[key]
-
-            else:
-                self.storage_list[key] = value_list[::-1] + []
-
-            length = len(self.storage_list[key])
-            self.cond.notify()
+        self.storage_list[key] = value_list[::-1] + self.storage_list.get(key , [])
+        length = len(self.storage_list[key])
+        self._server_waiter(key)
 
         return b":" + str(length).encode() + b"\r\n"
 
@@ -179,16 +178,21 @@ class Commands:
         return bulk_string(self.storage_list[key].pop(0))
 
 
-    def blpop(self, parts):
+    def blpop(self, parts , conn):
         key = parts[4]
         time_out = parts[6]
 
-        with self.cond:
-            while not self.storage_list.get(key):  
-                self.cond.wait()
-            item = self.storage_list[key].pop(0)
+        if self.storage_list.get(key):
+            return bulk_string([key , self.storage_list[key].pop(0)])
 
-        return bulk_list([key, item])
+        self.waiters.setdefault(key, deque()).append(conn)
+        return None
+
+        # with self.cond:
+        #     while not self.storage_list.get(key):
+        #         self.cond.wait()
+        #     item = self.storage_list[key].pop(0)
+
         # if the list has an item:
         #     pop the front item, reply [key, item] now
         # else:
@@ -200,3 +204,16 @@ class Commands:
         # list_key\r\n
         # $3\r\n
         # foo\r\n
+
+
+    def _server_waiter(self , key):
+        queue = self.waiters.get(key)
+        while queue and self.storage_list.get(key):
+            conn = queue.popleft()
+            item = self.storage_list[key].pop(0)
+            conn.sendall(bulk_string([key, item]))
+
+    def disconnect(self , conn):
+        for queue in self.waiters.values():
+            if conn in queue:
+                queue.remove(conn)
