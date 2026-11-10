@@ -84,13 +84,16 @@ class Commands:
         # [b'a', b'b']
         rangs = parts[6:len(parts):2]
         start = int(rangs[0])
-        stop = int(rangs[1]) + 1
+        stop = int(rangs[1])
+        if stop < 0:
+            stop += 1
 
+        
 
 
         # If the list doesn't exist, an empty array is returned.
         if key not in self.storage_list:
-            print("NIGGA")
+            print("the list is empty")
             return EMPTY_LIST
 
         value_list = self.storage_list[key]
