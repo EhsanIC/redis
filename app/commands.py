@@ -112,4 +112,4 @@ class Commands:
 
 
         # print(bulk_list(value_list[start:stop]))
-        return value_list[start:stop]
+        return bulk_list(value_list[start:stop])
