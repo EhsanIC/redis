@@ -155,8 +155,11 @@ class Commands:
         remove_num = int(parts[6])
         removed = []
 
-        for _ in range(remove_num):
-            removed.append(self.storage_list[key].pop(0))
+        if remove_num :
+            for _ in range(remove_num):
+                removed.append(self.storage_list[key].pop(0))
 
-        print(removed)
-        return bulk_list(removed)
+            print(removed)
+            return bulk_list(removed)
+
+        return bulk_string(self.storage_list[key].pop(0))
