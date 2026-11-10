@@ -32,6 +32,9 @@ class Commands:
             case b"LLEN":
                 return self.llen(parts)
 
+            case b"LPOP":
+                return self.lpop(parts)
+
             case _:
                 return b"+PONG\r\n"
 
@@ -146,3 +149,7 @@ class Commands:
             return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
         else:
             return ZERO_INT
+
+    def lpop(self, parts):
+        key = parts[4]
+        return bulk_string(self.storage_list[key].pop(0))
