@@ -180,12 +180,12 @@ class Commands:
 
     def blpop(self, parts , conn):
         key = parts[4]
-        time_out = int(parts[6])
+        time_out = float(parts[6])
 
         if self.storage_list.get(key):
             return bulk_list([key , self.storage_list[key].pop(0)])
 
-        deadline = (now_ms() / 1000) + time_out if time_out != 0 else None
+        deadline = now_ms() + (time_out * 1000) if time_out != 0 else None
 
         self.waiters.setdefault(key, deque()).append((conn, deadline))
         return None
