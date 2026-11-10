@@ -1,4 +1,4 @@
-from app.helpers import is_alive, now_ms, bulk_string, NULL_BULK, MULTIPLIER , EMPTY_LIST
+from app.helpers import is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST
 
 class Commands:
 
@@ -111,5 +111,5 @@ class Commands:
             return EMPTY_LIST
 
 
-
+        print(bulk_list(value_list[start:stop]))
         return value_list[start:stop]

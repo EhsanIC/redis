@@ -17,3 +17,20 @@ def now_ms():
 
 def bulk_string(value):
     return b"$" + str(len(value)).encode() + b"\r\n" + value + b"\r\n"
+
+
+# ["a" , "b" , "c"]
+# *3\r\n
+# $1\r\n
+# a\r\n
+# $1\r\n
+# b\r\n
+# $1\r\n
+# c\r\n
+#
+def bulk_list(list):
+    result = b"*" + str(len(list)).encode() + b"\r\n"
+    for item in list:
+        result += bulk_string(item)
+    return result
+    # return b"$" + str(len(list)).encode() + b"\r\n" + list + b"\r\n"
