@@ -111,5 +111,5 @@ class Commands:
             return EMPTY_LIST
 
 
-        print(bulk_list(value_list[start:stop]))
+        # print(bulk_list(value_list[start:stop]))
         return value_list[start:stop]
