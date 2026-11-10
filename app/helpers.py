@@ -2,6 +2,8 @@ import time  # noqa: F401
 
 NULL_BULK = b"$-1\r\n"
 
+ZERO_BULK = b"$0\r\n"
+
 EMPTY_LIST = b"*0\r\n"
 
 MULTIPLIER = {b"EX": 1000, b"PX": 1}

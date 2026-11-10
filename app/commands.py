@@ -1,4 +1,4 @@
-from app.helpers import is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST
+from app.helpers import ZERO_BULK, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST
 
 class Commands:
 
@@ -141,4 +141,7 @@ class Commands:
         return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
 
     def llen(self, parts):
-        return b":" + str(len(self.storage_list[parts[4]])).encode() + b"\r\n"
+        key = parts[4]
+        result = ZERO_BULK
+        if key in self.storage_list : result = str(len(self.storage_list[key])).encode()
+        return b":" + result + b"\r\n"
