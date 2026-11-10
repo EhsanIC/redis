@@ -1,10 +1,12 @@
 from app.helpers import ZERO_INT, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST
+import threading
 
 class Commands:
 
     def __init__(self) -> None:
         self.storage = {}
         self.storage_list = {}
+        self.cond = threading.Condition()
 
     def handle(self , parts):
 
@@ -34,6 +36,9 @@ class Commands:
 
             case b"LPOP":
                 return self.lpop(parts)
+
+            case b"BLPOP":
+                return self.blpop(parts)
 
             case _:
                 return b"+PONG\r\n"
@@ -84,6 +89,8 @@ class Commands:
         else:
             self.storage_list[key] = value_list
 
+        with self.cond:
+            self.cond.notify()
 
         return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
 
@@ -140,6 +147,8 @@ class Commands:
         else:
             self.storage_list[key] = value_list[::-1] + []
 
+        with self.cond:
+            self.cond.notify()
 
         return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
 
@@ -160,7 +169,34 @@ class Commands:
             for _ in range(remove_num):
                 removed.append(self.storage_list[key].pop(0))
 
-            print(removed)
             return bulk_list(removed)
 
         return bulk_string(self.storage_list[key].pop(0))
+
+
+    def blpop(self, parts):
+        key = parts[4]
+        time_out = parts[6]
+        removed = []
+        
+        if key in self.storage_list:
+            removed = self.storage_list[key].pop(0)
+            return bulk_list([key , removed])
+            
+        else :
+            with self.cond:
+                while not self.storage_list.get(key):   # missing or empty
+                    self.cond.wait()                         # sleeps until someone calls notify
+                item = self.storage_list[key].pop(0)
+            return bulk_list([key, item])
+        # if the list has an item:
+        #     pop the front item, reply [key, item] now
+        # else:
+        #     wait until a push happens (timeout 0 = no deadline)
+
+        # RESP encoding of ["list_key", "foo"]
+        # *2\r\n
+        # $8\r\n
+        # list_key\r\n
+        # $3\r\n
+        # foo\r\n
