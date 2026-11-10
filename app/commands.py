@@ -130,7 +130,7 @@ class Commands:
         if key in self.storage_list:
             # put the reversed new items in front of the existing ones
             revered_list = value_list[::-1] + []
-            self.storage_list[key].extend(revered_list)
+            self.storage_list[key] = revered_list + self.storage_list[key]
 
         else:
             # new list: just the reversed new items
