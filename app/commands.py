@@ -90,6 +90,7 @@ class Commands:
 
         # If the list doesn't exist, an empty array is returned.
         if key not in self.storage_list:
+            print("NIGGA")
             return EMPTY_LIST
 
         value_list = self.storage_list[key]
@@ -110,8 +111,9 @@ class Commands:
         # if start > stop :
         #     return EMPTY_LIST
 
-        if 0 > (len(self.storage_list[key]) + stop):
-            return bulk_list(value_list[0:stop])
+
+        # if 0 > (len(self.storage_list[key]) + stop):
+        #     return bulk_list(value_list[0:stop])
 
 
         # print(bulk_list(value_list[start:stop]))
