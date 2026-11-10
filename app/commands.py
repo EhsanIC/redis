@@ -152,7 +152,7 @@ class Commands:
 
     def lpop(self, parts):
         key = parts[4]
-        remove_num = None
+        remove_num = int(parts[6]) if len(parts) > 6 else None
         removed = []
 
         if remove_num != None:
