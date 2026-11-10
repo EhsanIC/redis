@@ -8,6 +8,8 @@ EMPTY_LIST = b"*0\r\n"
 
 MULTIPLIER = {b"EX": 1000, b"PX": 1}
 
+NULL_ARRAY = b"*-1\r\n"
+
 def is_alive(expire_time):
     if expire_time == None:
         return True
@@ -37,4 +39,3 @@ def bulk_list(list):
 
     return result
     # return b"$" + str(len(list)).encode() + b"\r\n" + list + b"\r\n"
-

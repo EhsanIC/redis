@@ -1,6 +1,6 @@
 from collections import deque
 
-from app.helpers import ZERO_INT, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST
+from app.helpers import is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST , NULL_ARRAY, ZERO_INT
 
 
 class Commands:
@@ -180,14 +180,14 @@ class Commands:
 
     def blpop(self, parts , conn):
         key = parts[4]
-        time_out = parts[6]
+        time_out = int(parts[6])
 
         if self.storage_list.get(key):
             return bulk_list([key , self.storage_list[key].pop(0)])
 
-        deadline = (now_ms() * 1000) + time_out if time_out != 0 else None
+        deadline = (now_ms() / 1000) + time_out if time_out != 0 else None
 
-        self.waiters.setdefault(key, deque()).append(conn, deadline)
+        self.waiters.setdefault(key, deque()).append((conn, deadline))
         return None
 
         # set the deadline
@@ -231,7 +231,7 @@ class Commands:
                 if is_alive(deadline):
                     alive.append((conn, deadline))
                 else:
-                    conn.sendall(NULL_BULK)
+                    conn.sendall(NULL_ARRAY)
 
             self.waiters[key] = alive
 
