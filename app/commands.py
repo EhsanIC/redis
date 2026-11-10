@@ -152,10 +152,10 @@ class Commands:
 
     def lpop(self, parts):
         key = parts[4]
-
+        remove_num = None
         removed = []
 
-        if int(parts[6]) :
+        if remove_num != None:
             remove_num = int(parts[6])
             for _ in range(remove_num):
                 removed.append(self.storage_list[key].pop(0))
