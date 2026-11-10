@@ -29,6 +29,9 @@ class Commands:
             case b"LRANGE":
                 return self.lrange(parts)
 
+            case b"LLEN":
+                return self.llen(parts)
+
             case _:
                 return b"+PONG\r\n"
 
@@ -128,23 +131,14 @@ class Commands:
         value_list = parts[6:len(parts):2]
 
         if key in self.storage_list:
-            # put the reversed new items in front of the existing ones
             revered_list = value_list[::-1] + []
             self.storage_list[key] = revered_list + self.storage_list[key]
 
         else:
-            # new list: just the reversed new items
             self.storage_list[key] = value_list[::-1] + []
 
 
         return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
 
-
-        # for item in new_items:
-        #     items.insert(0, item)
-        # print(items)   # [b'a', b'b', b'c']
-
-        # # option 2: reverse the new items, then join with the old list
-        # items = [b"c"]
-        # items = new_items[::-1] + items
-        # print(items)
+    def llen(self, parts):
+        return b":" + str(len(self.storage_list[parts[4]])).encode() + b"\r\n"
