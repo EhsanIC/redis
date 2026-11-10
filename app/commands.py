@@ -151,9 +151,9 @@ class Commands:
             else:
                 self.storage_list[key] = value_list[::-1] + []
 
-            length = len(self.storage_list[key])                       
-            self.cond.notify()       
-                                                                        
+            length = len(self.storage_list[key])
+            self.cond.notify()
+
         return b":" + str(length).encode() + b"\r\n"
 
 
@@ -182,18 +182,13 @@ class Commands:
     def blpop(self, parts):
         key = parts[4]
         time_out = parts[6]
-        removed = []
 
-        if key in self.storage_list:
-            removed = self.storage_list[key].pop(0)
-            return bulk_list([key , removed])
+        with self.cond:
+            while not self.storage_list.get(key):  
+                self.cond.wait()
+            item = self.storage_list[key].pop(0)
 
-        else :
-            with self.cond:
-                while not self.storage_list.get(key):   # missing or empty
-                    self.cond.wait()                         # sleeps until someone calls notify
-                item = self.storage_list[key].pop(0)
-            return bulk_list([key, item])
+        return bulk_list([key, item])
         # if the list has an item:
         #     pop the front item, reply [key, item] now
         # else:
