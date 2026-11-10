@@ -83,16 +83,18 @@ class Commands:
         key = parts[4]
         # [b'pineapple', b'banana']
         value_list = parts[6:len(parts):2]
+        with self.cond:
 
-        if key in self.storage_list:
-            self.storage_list[key].extend(value_list)
-        else:
-            self.storage_list[key] = value_list
+            if key in self.storage_list:
+                self.storage_list[key].extend(value_list)
+            else:
+                self.storage_list[key] = value_list
 
-        # with self.cond:
-        #     self.cond.notify()
+            length = len(self.storage_list[key])                        # 2. read length
+            self.cond.notify()                                          # 3. wake one waiter
 
-        return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
+
+        return b":" + str(length).encode() + b"\r\n"
 
 
     def lrange(self , parts):
@@ -140,17 +142,20 @@ class Commands:
         key = parts[4]
         value_list = parts[6:len(parts):2]
 
-        if key in self.storage_list:
-            revered_list = value_list[::-1] + []
-            self.storage_list[key] = revered_list + self.storage_list[key]
-
-        else:
-            self.storage_list[key] = value_list[::-1] + []
-
         with self.cond:
-            self.cond.notify()
 
-        return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
+            if key in self.storage_list:
+                revered_list = value_list[::-1] + []
+                self.storage_list[key] = revered_list + self.storage_list[key]
+
+            else:
+                self.storage_list[key] = value_list[::-1] + []
+
+            length = len(self.storage_list[key])                       
+            self.cond.notify()       
+                                                                        
+        return b":" + str(length).encode() + b"\r\n"
+
 
     def llen(self, parts):
         key = parts[4]
@@ -178,11 +183,11 @@ class Commands:
         key = parts[4]
         time_out = parts[6]
         removed = []
-        
+
         if key in self.storage_list:
             removed = self.storage_list[key].pop(0)
             return bulk_list([key , removed])
-            
+
         else :
             with self.cond:
                 while not self.storage_list.get(key):   # missing or empty
