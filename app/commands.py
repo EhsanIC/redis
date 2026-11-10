@@ -23,6 +23,9 @@ class Commands:
             case b"RPUSH":
                 return self.rpush(parts)
 
+            case b"LPUSH":
+                return self.lpush(parts)
+
             case b"LRANGE":
                 return self.lrange(parts)
 
@@ -118,5 +121,29 @@ class Commands:
         #     return bulk_list(value_list[0:stop])
 
 
-        print(value_list[start:stop])
         return bulk_list(value_list[start:stop])
+
+    def lpush(self, parts):
+        key = parts[4]
+        value_list = parts[6:len(parts):2]
+
+        if key in self.storage_list:
+            # put the reversed new items in front of the existing ones
+            ...
+        else:
+            # new list: just the reversed new items
+            print(value_list[::-1] + [])
+            self.storage_list[key] = value_list[::-1] + []
+
+
+        return b":" + str(len(self.storage_list[key])).encode() + b"\r\n"
+
+
+        # for item in new_items:
+        #     items.insert(0, item)
+        # print(items)   # [b'a', b'b', b'c']
+
+        # # option 2: reverse the new items, then join with the old list
+        # items = [b"c"]
+        # items = new_items[::-1] + items
+        # print(items)
