@@ -110,6 +110,9 @@ class Commands:
         # if start > stop :
         #     return EMPTY_LIST
 
+        if 0 > (len(self.storage_list[key]) + stop):
+            return bulk_list(value_list[0:stop])
+
 
         # print(bulk_list(value_list[start:stop]))
         return bulk_list(value_list[start:stop])
