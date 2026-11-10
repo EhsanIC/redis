@@ -88,7 +88,7 @@ class Commands:
         if stop < 0:
             stop += 1
 
-        
+
 
 
         # If the list doesn't exist, an empty array is returned.
@@ -119,5 +119,5 @@ class Commands:
         #     return bulk_list(value_list[0:stop])
 
 
-        # print(bulk_list(value_list[start:stop]))
+        print(value_list[start:stop])
         return bulk_list(value_list[start:stop])
