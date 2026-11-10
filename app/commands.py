@@ -183,7 +183,7 @@ class Commands:
         time_out = parts[6]
 
         if self.storage_list.get(key):
-            return bulk_string([key , self.storage_list[key].pop(0)])
+            return bulk_list([key , self.storage_list[key].pop(0)])
 
         self.waiters.setdefault(key, deque()).append(conn)
         return None
@@ -211,7 +211,7 @@ class Commands:
         while queue and self.storage_list.get(key):
             conn = queue.popleft()
             item = self.storage_list[key].pop(0)
-            conn.sendall(bulk_string([key, item]))
+            conn.sendall(bulk_list([key, item]))
 
     def disconnect(self , conn):
         for queue in self.waiters.values():
