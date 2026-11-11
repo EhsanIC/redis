@@ -1,7 +1,6 @@
 from app.commands import Commands
 from app.server import Server
 
-clients = []
 
 def main():
     commands = Commands()
