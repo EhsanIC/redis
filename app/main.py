@@ -4,7 +4,7 @@ from app.server import Server
 
 def main():
     commands = Commands()
-    Server(commands)
+    Server(commands , commands.waiters)
 
 
 if __name__ == "__main__":

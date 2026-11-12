@@ -1,6 +1,5 @@
-from collections import deque
-
-from app.helpers import bulk_number, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST , NULL_ARRAY, ZERO_INT, parse_resp
+from app.helpers import bulk_number, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST , ZERO_INT, parse_resp
+from app.waiters import Waiters
 
 
 class Commands:
@@ -8,12 +7,16 @@ class Commands:
     def __init__(self) -> None:
         self.storage = {}
         self.storage_list = {}
-        self.waiters = {}
+        self.waiters = Waiters()
 
     def handle(self , parts , conn):
 
+        # giving to handler
+
         # command = parts[2].upper()
         command , *args = parse_resp(parts)
+
+
 
         match command.upper():
             case b"ECHO":
@@ -81,9 +84,14 @@ class Commands:
 
         self.storage_list.setdefault(key , []).extend(value_list)
         length = len(self.storage_list[key])
-        self._server_waiter(key)
+        self._serve(key)
 
         return bulk_number(length)
+
+
+
+
+
 
 
     def lrange(self , args):
@@ -104,7 +112,7 @@ class Commands:
 
         self.storage_list[key] = value_list[::-1] + self.storage_list.get(key , [])
         length = len(self.storage_list[key])
-        self._server_waiter(key)
+        self._serve(key)
 
         return bulk_number(length)
 
@@ -139,30 +147,11 @@ class Commands:
 
         deadline = now_ms() + (time_out * 1000) if time_out != 0 else None
 
-        self.waiters.setdefault(key, deque()).append((conn, deadline))
+        self.waiters.register(key , conn , deadline)
         return None
 
-    def _server_waiter(self , key):
-        queue = self.waiters.get(key)
-        while queue and self.storage_list.get(key):
-            conn, _ = queue.popleft()
-            item = self.storage_list[key].pop(0)
-            conn.sendall(bulk_list([key, item]))
 
-    def disconnect(self , conn):
-        for key, queue in self.waiters.items():
-            self.waiters[key] = deque(w for w in queue if w[0] != conn)
+    def _serve(self, key):
+        while self.storage_list.get(key) and self.waiters.notify(key ,self.storage_list[key][0]):
+            self.storage_list[key].pop(0)
 
-    def expire_waiters(self):
-        for key, queue in self.waiters.items():
-            alive = deque()
-
-            for conn, deadline in queue:
-                if is_alive(deadline):
-                    alive.append((conn, deadline))
-                else:
-                    conn.sendall(NULL_ARRAY)
-
-            self.waiters[key] = alive
-
-#-> Parking blocked clients

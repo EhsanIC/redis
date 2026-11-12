@@ -2,7 +2,7 @@ import socket
 
 clients = []
 
-def Server(command_handler):
+def Server(command_handler , waiters):
     print("Logs from your program will appear here!")
 
     server_socket = socket.create_server(("localhost", 6379))
@@ -18,7 +18,9 @@ def Server(command_handler):
             pass # nobody is trying to connect right now
 
 
-        command_handler.expire_waiters() # check deadlines every pass
+        # command_handler.expire_waiters() # check deadlines every pass
+
+        waiters.expire()
 
         for conn in clients[:] :
 
@@ -31,7 +33,7 @@ def Server(command_handler):
 
 
             if not data:
-                command_handler.disconnect(conn)
+                waiters.disconnect(conn)
                 clients.remove(conn)
                 conn.close()
                 continue
@@ -40,3 +42,5 @@ def Server(command_handler):
             result = command_handler.handle(data , conn)
             if result is not None:
                 conn.sendall(result)
+
+            # server_socket.settimeout(1.0)
