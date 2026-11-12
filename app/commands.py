@@ -1,6 +1,6 @@
 from collections import deque
 
-from app.helpers import bulk_number, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST , NULL_ARRAY, ZERO_INT
+from app.helpers import bulk_number, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST , NULL_ARRAY, ZERO_INT, parse_resp
 
 
 class Commands:
@@ -12,65 +12,60 @@ class Commands:
 
     def handle(self , parts , conn):
 
-        command = parts[2].upper()
+        # command = parts[2].upper()
+        command , *args = parse_resp(parts)
 
-        match command:
+        match command.upper():
             case b"ECHO":
-                return self.echo(parts)
+                return self.echo(args)
 
             case b"SET":
-                return self.set(parts)
+                return self.set(args)
 
             case b"GET":
-                return self.get(parts)
+                return self.get(args)
 
             case b"RPUSH":
-                return self.rpush(parts)
+                return self.rpush(args)
 
             case b"LPUSH":
-                return self.lpush(parts)
+                return self.lpush(args)
 
             case b"LRANGE":
-                return self.lrange(parts)
+                return self.lrange(args)
 
             case b"LLEN":
-                return self.llen(parts)
+                return self.llen(args)
 
             case b"LPOP":
-                return self.lpop(parts)
+                return self.lpop(args)
 
             case b"BLPOP":
-                return self.blpop(parts , conn)
+                return self.blpop(args , conn)
 
             case _:
                 return b"+PONG\r\n"
 
 
-    def echo(self , parts):
-        return bulk_string(parts[4])
+    def echo(self , args):
+        return bulk_string(args[0])
 
+    def set(self , args):
+        key , value , *options  = args
+        expire_at = None
 
-    def set(self , parts):
-        key = parts[4]
-        value = parts[6]
+        if options and options[0].upper() in MULTIPLIER:
 
-        if len(parts) > 8 and parts[8].upper() in MULTIPLIER:
+            multiplier_type , time_limit = options
+            multiplier = MULTIPLIER[multiplier_type.upper()]
+            expire_at = now_ms() + int(time_limit) * multiplier
 
-            time_value = int(parts[10])
-
-            multiplier = MULTIPLIER[parts[8].upper()]
-            expire_at = now_ms() + time_value * multiplier
-
-            self.storage[key] = [value , expire_at]
-
-        else:
-            self.storage[key] = [value , None]
-
+        self.storage[key] = [value , expire_at]
         return b"+OK\r\n"
 
 
-    def get(self , parts):
-        key = parts[4]
+    def get(self , args):
+        key = args[0]
         if key in self.storage :
             value , expire_time = self.storage[key]
             if is_alive(expire_time):
@@ -81,9 +76,8 @@ class Commands:
         else:
             return NULL_BULK
 
-    def rpush(self , parts):
-        key = parts[4]
-        value_list = parts[6:len(parts):2]
+    def rpush(self , args):
+        key , *value_list = args
 
         self.storage_list.setdefault(key , []).extend(value_list)
         length = len(self.storage_list[key])
@@ -92,21 +86,10 @@ class Commands:
         return bulk_number(length)
 
 
-
-
-
-
-
-    def lrange(self , parts):
-        key = parts[4]
-        # [b'a', b'b']
-        rangs = parts[6:len(parts):2]
-        start = int(rangs[0])
-        stop = int(rangs[1]) + 1
+    def lrange(self , args):
+        key , start , stop = args
+        start , stop = int(start) , int(stop) + 1
         if stop == 0 : stop = None
-
-
-
 
         # If the list doesn't exist, an empty array is returned.
         if key not in self.storage_list:
@@ -114,12 +97,10 @@ class Commands:
 
         value_list = self.storage_list[key]
 
-
         return bulk_list(value_list[start:stop])
 
-    def lpush(self, parts):
-        key = parts[4]
-        value_list = parts[6:len(parts):2]
+    def lpush(self, args):
+        key , *value_list = args
 
         self.storage_list[key] = value_list[::-1] + self.storage_list.get(key , [])
         length = len(self.storage_list[key])
@@ -128,20 +109,19 @@ class Commands:
         return bulk_number(length)
 
 
-    def llen(self, parts):
-        key = parts[4]
+    def llen(self, args):
+        key = args[0]
         if key in self.storage_list :
             return bulk_number(len(self.storage_list[key]))
         else:
             return ZERO_INT
 
-    def lpop(self, parts):
-        key = parts[4]
-        remove_num = int(parts[6]) if len(parts) > 6 else None
+    def lpop(self, args):
+        key = args[0]
+        remove_num = int(args[1]) if len(args) > 1 else None
         removed = []
 
         if remove_num != None:
-            remove_num = int(parts[6])
             for _ in range(remove_num):
                 removed.append(self.storage_list[key].pop(0))
 
@@ -150,9 +130,9 @@ class Commands:
         return bulk_string(self.storage_list[key].pop(0))
 
 
-    def blpop(self, parts , conn):
-        key = parts[4]
-        time_out = float(parts[6])
+    def blpop(self, args , conn):
+        key , time_out = args
+        time_out = float(time_out)
 
         if self.storage_list.get(key):
             return bulk_list([key , self.storage_list[key].pop(0)])

@@ -37,8 +37,6 @@ def Server(command_handler):
                 continue
 
             # *2\r\n$4\r\nECHO\r\n$3\r\nhey\r\n
-            result = command_handler.handle(data.split(b"\r\n") , conn)
+            result = command_handler.handle(data , conn)
             if result is not None:
                 conn.sendall(result)
-
-            # server_socket.settimeout(1.0)
