@@ -46,6 +46,9 @@ class Commands:
             case b"BLPOP":
                 return self.blpop(args , conn)
 
+            case b"TYPE":
+                return self.type(args)
+
             case _:
                 return b"+PONG\r\n"
 
@@ -155,3 +158,12 @@ class Commands:
         while self.storage_list.get(key) and self.waiters.notify(key ,self.storage_list[key][0]):
             self.storage_list[key].pop(0)
 
+
+    def type(self, args):
+        key , value = args
+
+        if self.storage[key]:
+            return bulk_string("string")
+        return bulk_string("none")
+
+        # string, list, set, zset, hash, stream, and vectorset
