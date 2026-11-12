@@ -1,12 +1,12 @@
 from app.helpers import bulk_number, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST , ZERO_INT, parse_resp, simple_string
 from app.waiters import Waiters
 
-
 class Commands:
 
     def __init__(self) -> None:
         self.storage = {}
         self.storage_list = {}
+        self.storage_stream = {}
         self.waiters = Waiters()
 
     def handle(self , parts , conn):
@@ -48,6 +48,9 @@ class Commands:
 
             case b"TYPE":
                 return self.type(args)
+
+            case b"XADD":
+                return self.xadd(args)
 
             case _:
                 return b"+PONG\r\n"
@@ -164,6 +167,32 @@ class Commands:
 
         if key in self.storage:
             return simple_string(b"string")
+        if key in self.storage_stream:
+            return simple_string(b"stream")
+
         return simple_string(b"none")
 
+
         # string, list, set, zset, hash, stream, and vectorset
+
+    def xadd(self, args):
+
+        key, entry_id, *fields = args
+        fields_key , fields_value = fields[0] , fields[1]
+
+        self.storage_stream[key] = [
+            {"id" : entry_id, "fields" : {fields_key : fields_value}}
+        ]
+
+        return bulk_string(entry_id)
+
+
+
+
+        # storage_stream = {
+        #     b"stream_key": [
+        #         {"id": b"0-1", "fields": {b"foo": b"bar"}},
+        #         {"id": b"0-2", "fields": {b"temp": b"36", b"hum": b"95"}},
+        #     ],
+        #     b"other_stream": [ ... ],
+        # }
