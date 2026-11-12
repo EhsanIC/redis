@@ -162,7 +162,7 @@ class Commands:
     def type(self, args):
         key = args[0]
 
-        if self.storage[key]:
+        if key in self.storage:
             return simple_string(b"string")
         return simple_string(b"none")
 
