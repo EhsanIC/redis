@@ -1,4 +1,4 @@
-from app.helpers import bulk_number, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST , ZERO_INT, parse_resp
+from app.helpers import bulk_number, is_alive, now_ms, bulk_string, bulk_list, NULL_BULK, MULTIPLIER , EMPTY_LIST , ZERO_INT, parse_resp, simple_string
 from app.waiters import Waiters
 
 
@@ -163,7 +163,7 @@ class Commands:
         key = args[0]
 
         if self.storage[key]:
-            return bulk_string(b"string")
-        return bulk_string(b"none")
+            return simple_string(b"string")
+        return simple_string(b"none")
 
         # string, list, set, zset, hash, stream, and vectorset

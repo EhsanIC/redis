@@ -31,6 +31,9 @@ def bulk_list(list):
 
     return result
 
+def simple_string(string):
+    return b"+" + string + b"\r\n"
+
 def parse_resp(data):
     parts = data.split(b"\r\n")
     return parts[2::2]
