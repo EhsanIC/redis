@@ -163,7 +163,7 @@ class Commands:
         key = args[0]
 
         if self.storage[key]:
-            return bulk_string("string")
-        return bulk_string("none")
+            return bulk_string(b"string")
+        return bulk_string(b"none")
 
         # string, list, set, zset, hash, stream, and vectorset
