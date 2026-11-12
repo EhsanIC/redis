@@ -160,7 +160,7 @@ class Commands:
 
 
     def type(self, args):
-        key , value = args
+        key = args[0]
 
         if self.storage[key]:
             return bulk_string("string")
