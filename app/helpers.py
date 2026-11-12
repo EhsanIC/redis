@@ -33,4 +33,4 @@ def bulk_list(list):
 
 def parse_resp(data):
     parts = data.split(b"\r\n")
-    return parts[2::2][:-1]
+    return parts[2::2]
