@@ -1,4 +1,4 @@
-<p align="center"><a href="README.md"><b>English</b></a> | <b>فارسی</b></p>
+<p align="center"><a href="README.md">English</a> | <b>فارسی</b></p>
 
 <div dir="rtl">
 
