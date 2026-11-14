@@ -102,4 +102,4 @@ codecrafters submit
 
 ## 🙏 Credits
 
-Built through the [CodeCrafters "Build Your Own Redis" challenge](https://codecrafters.io/challenges/redis) — the challenge scaffolding is theirs, the implementation is entirely my own.
+Built through the [CodeCrafters "Build Your Own Redis" challenge](https://codecrafters.io/challenges/redis) — the challenge scaffolding is theirs, **the implementation is entirely my own.**
