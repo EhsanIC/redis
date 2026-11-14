@@ -1,14 +1,17 @@
-[English](README.md) | **فارسی**
+<p align="center"><a href="README.md"><b>English</b></a> | <b>فارسی</b></p>
 
 <div dir="rtl">
 
 # ساخت کلون Redis با پایتون
 
-[![progress-banner](https://backend.codecrafters.io/progress/redis/52edac4e-c367-4015-9ef5-4f44b1e9d729)](https://app.codecrafters.io/users/EhsanIC)
-
 </div>
 
-![Redis in action](https://user-images.githubusercontent.com/74038190/212257472-08e52665-c503-4bd9-aa20-f5a4dae769b5.gif)
+<p align="center">
+  <a href="https://app.codecrafters.io/users/EhsanIC">
+    <img src="https://backend.codecrafters.io/progress/redis/52edac4e-c367-4015-9ef5-4f44b1e9d729" alt="CodeCrafters progress" width="49%"/>
+  </a>
+  <img src="https://user-images.githubusercontent.com/74038190/212257472-08e52665-c503-4bd9-aa20-f5a4dae769b5.gif" alt="Redis in action" width="49%"/>
+</p>
 
 <div dir="rtl">
 
