@@ -1,60 +1,103 @@
-[![progress-banner](https://backend.codecrafters.io/progress/redis/52edac4e-c367-4015-9ef5-4f44b1e9d729)](https://app.codecrafters.io/users/EhsanIC?r=2qF)
+**English** | [فارسی](README.fa.md)
 
-This is a starting point for Python solutions to the
-["Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis).
+# Build Your Own Redis in Python
 
-In this challenge, you'll build a toy Redis clone that's capable of handling
-basic commands like `PING`, `SET` and `GET`. Along the way we'll learn about
-event loops, the Redis protocol and more.
+[![progress-banner](https://backend.codecrafters.io/progress/redis/52edac4e-c367-4015-9ef5-4f44b1e9d729)](https://app.codecrafters.io/users/EhsanIC)
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+![Redis in action](https://user-images.githubusercontent.com/74038190/212257472-08e52665-c503-4bd9-aa20-f5a4dae769b5.gif)
 
-# Passing the first stage
+A hand-rolled Redis clone in Python — no frameworks, just raw sockets and a single-threaded event loop.
 
-The entry point for your Redis implementation is in `app/main.py`. Study and
-uncomment the relevant code, then run the command below to execute the tests on
-our servers:
+![Demo](docs/demo.gif)
+<!-- [placeholder] Add a short demo recording at docs/demo.gif -->
 
-```sh
+## ✨ Features
+
+- [x] `PING` / `ECHO`
+- [x] `SET` with expiry (`EX` / `PX`) and `GET` with lazy expiration
+- [x] Lists: `RPUSH`, `LPUSH`, `LRANGE`, `LLEN`, `LPOP`
+- [x] `BLPOP` — blocking pop with per-key waiter queues and timeouts
+- [x] `TYPE`
+- [x] Hand-written RESP encoding/decoding
+- [x] Single-threaded event loop over non-blocking sockets
+- [ ] `XADD` / streams — in progress
+
+## 🚀 Quick start
+
+```bash
+git clone https://github.com/EhsanIC/redis
+cd redis
+./your_program.sh
+```
+
+Then, in another terminal:
+
+```text
+redis-cli
+127.0.0.1:6379> SET greeting "hello"
+OK
+127.0.0.1:6379> GET greeting
+"hello"
+127.0.0.1:6379> RPUSH mylist a b c
+(integer) 3
+```
+
+## ⚙️ How it works
+
+**Protocol.** Clients talk RESP2. Incoming bytes are split on CRLF to extract the command and its arguments; replies are encoded by hand with small helpers for bulk strings, integers, arrays, simple strings and errors.
+
+**Concurrency.** A single thread runs a non-blocking event loop: accept new connections, expire any timed-out blocking clients, poll every connected client for input, dispatch the command, and write the reply back. No threads, no asyncio — the same shape Redis itself uses.
+
+**Storage.** Plain dicts, one per data type: strings (`key → [value, expire_at]`), lists, and streams. Expiration is lazy: `GET` checks whether the key's deadline has passed and answers with a null bulk string if it has.
+
+**Blocking commands.** `BLPOP` registers the client in a per-key waiter queue with a deadline. When `RPUSH`/`LPUSH` add an element, the first waiter is served immediately; on timeout the loop hands back a null array.
+
+### Project layout
+
+```text
+.
+├── app/
+│   ├── main.py        # entry point
+│   ├── server.py      # the event loop: accept / expire / poll / reply
+│   ├── commands.py    # command dispatch and implementations
+│   ├── helpers.py     # RESP encode/decode, expiry utilities
+│   ├── waiters.py     # registry of blocked clients for BLPOP
+│   └── test.py
+├── your_program.sh
+└── codecrafters.yml
+```
+
+## 🧪 Testing
+
+Run the challenge test suite:
+
+```bash
+codecrafters test
+```
+
+Or test manually with `redis-cli` against `./your_program.sh`. When ready, submit:
+
+```bash
 codecrafters submit
 ```
 
-That's all!
+## 📚 What I learned
 
-# Stage 2 & beyond
+- The RESP2 wire protocol, byte by byte
+- How a single-threaded event loop multiplexes many clients without threads
+- How Redis implements blocking list operations (waiter queues + deadlines)
+- Lazy vs. active key expiration
+- <!-- [placeholder] Add anything else you learned along the way -->
 
-Note: This section is for stages 2 and beyond.
+## 🔧 What I'd improve
 
-1. Ensure you have `uv` installed locally
-1. Run `./your_program.sh` to run your Redis server, which is implemented in
-   `app/main.py`.
-1. Run `codecrafters submit` to submit your solution to CodeCrafters. Test
-   output will be streamed to your terminal.
+- Delete dead code and commented-out experiments — git remembers history
+- Use `is None` instead of `== None` (PEP 8)
+- One `resp_int(n)` helper instead of duplicated integer-reply code
+- Replace bare `[value, expire_at]` entries with a small dataclass
+- Consistent dict initialization (`setdefault` everywhere)
+- Finish `XADD`: ID validation, auto-generated IDs, multiple field-value pairs, and `XRANGE`
 
-# Troubleshooting
+## 🙏 Credits
 
-## module `socket` has no attribute `create_server`
-
-When running your server locally, you might see an error like this:
-
-```
-Traceback (most recent call last):
-  File "/.../python3.7/runpy.py", line 193, in _run_module_as_main
-    "__main__", mod_spec)
-  File "/.../python3.7/runpy.py", line 85, in _run_code
-    exec(code, run_globals)
-  File "/app/app/main.py", line 11, in <module>
-    main()
-  File "/app/app/main.py", line 6, in main
-    s = socket.create_server(("localhost", 6379), reuse_port=True)
-AttributeError: module 'socket' has no attribute 'create_server'
-```
-
-This is because `socket.create_server` was introduced in Python 3.8, and you
-might be running an older version.
-
-You can fix this by installing Python 3.8 locally and using that.
-
-If you'd like to use a different version of Python, change the `buildpack` value
-in `codecrafters.yml`.
+Built through the [CodeCrafters "Build Your Own Redis" challenge](https://codecrafters.io/challenges/redis) — the challenge scaffolding is theirs, the implementation is entirely my own.
