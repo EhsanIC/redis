@@ -22,7 +22,6 @@ A hand-rolled Redis clone in Python — no frameworks, just raw sockets and a si
 - [x] `TYPE`
 - [x] Hand-written RESP encoding/decoding
 - [x] Single-threaded event loop over non-blocking sockets
-- [ ] `XADD` / streams — in progress
 
 ## 🚀 Quick start
 
@@ -89,7 +88,7 @@ codecrafters submit
 - How a single-threaded event loop multiplexes many clients without threads
 - How Redis implements blocking list operations (waiter queues + deadlines)
 - Lazy vs. active key expiration
-- <!-- [placeholder] Add anything else you learned along the way -->
+- Dependency injection — `main()` builds the pieces and passes them into `Server` instead of it constructing its own
 
 ## 🔧 What I'd improve
 
