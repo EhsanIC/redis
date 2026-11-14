@@ -10,7 +10,6 @@
   <a href="https://app.codecrafters.io/users/EhsanIC">
     <img src="https://backend.codecrafters.io/progress/redis/52edac4e-c367-4015-9ef5-4f44b1e9d729" alt="CodeCrafters progress" width="49%"/>
   </a>
-  <img src="https://user-images.githubusercontent.com/74038190/212257472-08e52665-c503-4bd9-aa20-f5a4dae769b5.gif" alt="Redis in action" width="49%"/>
 </p>
 
 <div dir="rtl">
@@ -135,6 +134,6 @@ codecrafters submit
 
 ## 🙏 قدردانی
 
-این پروژه در چالش [Build Your Own Redis از CodeCrafters](https://codecrafters.io/challenges/redis) ساخته شده — اسکلت چالش از آنِ CodeCrafters است، اما پیاده‌سازی کاملاً کار خودم است.
+این پروژه در چالش [Build Your Own Redis از CodeCrafters](https://codecrafters.io/challenges/redis) ساخته شده — اسکلت چالش از آنِ CodeCrafters است، **اما پیاده‌سازی کاملاً کار خودم است.**
 
 </div>
