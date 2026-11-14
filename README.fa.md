@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://app.codecrafters.io/users/EhsanIC">
-    <img src="https://backend.codecrafters.io/progress/redis/52edac4e-c367-4015-9ef5-4f44b1e9d729" alt="CodeCrafters progress" width="49%"/>
+    <img src="https://backend.codecrafters.io/progress/redis/52edac4e-c367-4015-9ef5-4f44b1e9d729" alt="CodeCrafters progress" width="100%"/>
   </a>
 </p>
 
