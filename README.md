@@ -1,6 +1,6 @@
 <p align="center"><b>English</b> | <a href="README.fa.md">فارسی</a></p>
 
-# Build Your Own Redis in Python
+# Redis in Python
 
 <p align="center">
   <a href="https://app.codecrafters.io/users/EhsanIC">
